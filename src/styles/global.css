@@ -1,0 +1,223 @@
+/* ============================================================
+   EBENORA — Design system
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  /* Couleurs primaires (ADN) */
+  --brun-profond:    #2A1C15;
+  --ivoire-doux:     #F5F1E8;
+  /* Couleurs secondaires */
+  --brun-chaleureux: #7A5233;
+  --or-subtil:       #C9A86A;
+  --beige-naturel:   #DCCBB3;
+  --gris-taupe:      #A89F94;
+
+  /* Rôles */
+  --bg:        var(--ivoire-doux);
+  --surface:   #FBF9F4;
+  --text:      var(--brun-profond);
+  --text-soft: var(--gris-taupe);
+  --accent:    var(--brun-chaleureux);
+  --line:      rgba(42, 28, 21, 0.12);
+
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans:  'Inter', system-ui, -apple-system, sans-serif;
+
+  --maxw: 1200px;
+  --radius: 2px;
+  --radius-lg: 4px;
+  --radius-pill: 40px;
+
+  /* Échelle d'ombres douces et étagées (nuances de brun-profond) */
+  --shadow-xs: 0 1px 2px rgba(42, 28, 21, 0.05);
+  --shadow-sm: 0 2px 6px rgba(42, 28, 21, 0.06);
+  --shadow:    0 6px 24px rgba(42, 28, 21, 0.08);
+  --shadow-md: 0 12px 34px rgba(42, 28, 21, 0.10);
+  --shadow-lg: 0 22px 60px rgba(42, 28, 21, 0.16);
+
+  /* Espacement — grille 8px */
+  --sp-1: 8px;  --sp-2: 16px; --sp-3: 24px; --sp-4: 32px;
+  --sp-5: 40px; --sp-6: 48px; --sp-8: 64px; --sp-10: 80px;
+
+  /* Courbes d'animation */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Anneau de focus accessible (WCAG) */
+  --focus-ring: 0 0 0 3px rgba(122, 82, 51, 0.35);
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  color: var(--text);
+  background: var(--bg);
+  font-weight: 400;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--serif);
+  font-weight: 500;
+  line-height: 1.12;
+  margin: 0 0 0.4em;
+  letter-spacing: 0.005em;
+  text-wrap: balance;
+}
+
+h1 { font-size: clamp(2.4rem, 5vw, 4rem); letter-spacing: -0.01em; }
+h2 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); }
+h3 { font-size: 1.4rem; }
+
+p { text-wrap: pretty; }
+
+a { color: inherit; text-decoration: none; transition: color 0.2s var(--ease); }
+
+img { max-width: 100%; display: block; }
+
+/* Accessibilité — focus visible cohérent sur tous les interactifs */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius);
+}
+::selection { background: rgba(201, 168, 106, 0.35); color: var(--brun-profond); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Animations réutilisables */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.fade-up { animation: fadeUp 0.7s var(--ease-out) both; }
+
+.container {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section { padding: 72px 0; }
+
+/* ─── Boutons ─────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 14px 30px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.25s var(--ease), transform 0.2s var(--ease), box-shadow 0.25s var(--ease), color 0.25s var(--ease);
+  background: var(--brun-chaleureux);
+  color: var(--ivoire-doux);
+  box-shadow: var(--shadow-xs);
+  will-change: transform;
+}
+.btn:hover { background: var(--brun-profond); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.btn:active { transform: translateY(0); box-shadow: var(--shadow-xs); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-outline {
+  background: transparent;
+  color: var(--brun-profond);
+  border-color: rgba(42, 28, 21, 0.4);
+  box-shadow: none;
+}
+.btn-outline:hover { background: var(--brun-profond); color: var(--ivoire-doux); border-color: var(--brun-profond); }
+
+.btn-ghost { background: transparent; color: var(--text); padding: 10px 16px; box-shadow: none; }
+.btn-ghost:hover { background: rgba(42,28,21,0.06); transform: none; box-shadow: none; }
+
+.btn-sm { padding: 9px 18px; font-size: 0.72rem; }
+
+/* filet or, à utiliser avec parcimonie */
+.gold-rule {
+  width: 56px; height: 2px;
+  background: var(--or-subtil);
+  border: 0; margin: 18px 0;
+}
+.center .gold-rule { margin-left: auto; margin-right: auto; }
+.center { text-align: center; }
+
+/* ─── Champs de formulaire ────────────────────────────── */
+.field { margin-bottom: 18px; }
+.field label {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  margin-bottom: 7px;
+}
+.input, .textarea, .select {
+  width: 100%;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 13px 15px;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease);
+}
+.input:hover, .textarea:hover, .select:hover { border-color: rgba(42, 28, 21, 0.24); }
+.input:focus, .textarea:focus, .select:focus,
+.input:focus-visible, .textarea:focus-visible, .select:focus-visible {
+  outline: none;
+  border-color: var(--brun-chaleureux);
+  box-shadow: var(--focus-ring);
+  background: var(--ivoire-doux);
+}
+.input::placeholder, .textarea::placeholder { color: rgba(168, 159, 148, 0.85); }
+.textarea { min-height: 90px; resize: vertical; }
+
+/* ─── Badges / éléments ───────────────────────────────── */
+.eyebrow {
+  font-size: 0.74rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--brun-chaleureux);
+  font-weight: 500;
+}
+.muted { color: var(--text-soft); }
+.price { font-family: var(--serif); font-size: 1.25rem; color: var(--brun-profond); }
+
+/* ─── Grille de tableaux ──────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 34px;
+}
+
+/* ─── Utilitaires ─────────────────────────────────────── */
+.spinner {
+  width: 34px; height: 34px; margin: 60px auto;
+  border: 2px solid var(--line);
+  border-top-color: var(--brun-chaleureux);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty { text-align: center; color: var(--text-soft); padding: 80px 0; }
