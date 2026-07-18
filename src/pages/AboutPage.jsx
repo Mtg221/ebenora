@@ -25,7 +25,7 @@ export default function AboutPage() {
             d'échanger autour de l'art.
           </p>
           <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
-            <a href="mailto:contact@ebenora.com" className="btn">Nous écrire</a>
+            <a href="mailto:ebenorart.221@gmail.com" className="btn">Nous écrire</a>
             <Link to="/galerie" className="btn btn-outline">Voir les œuvres</Link>
           </div>
         </div>
