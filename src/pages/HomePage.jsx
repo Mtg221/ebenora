@@ -33,7 +33,7 @@ export default function HomePage() {
           </p>
           <div className="hero-actions">
             <Link to="/galerie" className="btn">Découvrir la galerie</Link>
-            <Link to="/a-propos" className="btn btn-outline" style={{ color: 'var(--ivoire-doux)', borderColor: 'var(--ivoire-doux)' }}>L'artiste</Link>
+            <Link to="/a-propos" className="btn btn-outline" style={{ color: 'var(--ivoire-doux)', borderColor: 'var(--ivoire-doux)' }}>Notre univers</Link>
           </div>
         </div>
       </section>
