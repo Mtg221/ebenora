@@ -27,8 +27,9 @@ export default function HomePage() {
           <span className="eyebrow">Galerie d'art · Éditions limitées</span>
           <h1>L'art qui habite vos murs</h1>
           <p>
-            EBENORA réunit des reproductions d'œuvres originales, imprimées avec exigence.
-            Des pièces chaleureuses et intemporelles, pour donner une âme à vos espaces.
+            Chaque mur mérite une œuvre. EBENORA sélectionne des créations artistiques
+            pensées pour sublimer votre intérieur. Des œuvres élégantes, imprimées avec
+            exigence, pour transformer un espace en un lieu qui vous ressemble.
           </p>
           <div className="hero-actions">
             <Link to="/galerie" className="btn">Découvrir la galerie</Link>
