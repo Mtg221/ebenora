@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { useCart } from '../context/CartContext'
+import { useCart, lineKey } from '../context/CartContext'
 import { useToast } from '../context/ToastContext'
 import { placeOrder } from '../lib/api'
 import { formatPrice } from '../lib/format'
+import { materialLabel } from '../lib/sizes'
 
 export default function CheckoutPage() {
   const { items, total, clear } = useCart()
@@ -35,7 +36,14 @@ export default function CheckoutPage() {
     try {
       await placeOrder({
         ...form,
-        items: items.map((i) => ({ paintingId: i.paintingId, format: i.format, qty: i.qty })),
+        items: items.map((i) => ({
+          paintingId: i.paintingId,
+          format: i.format,
+          material: i.material,
+          custom: i.custom,
+          customDimensions: i.customDimensions,
+          qty: i.qty,
+        })),
       })
       clear()
       navigate('/confirmation', { state: { name: form.name } })
@@ -87,9 +95,15 @@ export default function CheckoutPage() {
         <div className="order-box">
           <h3 style={{ marginTop: 0 }}>Récapitulatif</h3>
           {items.map((it) => (
-            <div className="line" key={it.paintingId + it.format}>
-              <span>{it.title} <span className="muted">· {it.format} × {it.qty}</span></span>
-              <span>{formatPrice(it.price * it.qty)}</span>
+            <div className="line" key={lineKey(it)}>
+              <span>
+                {it.title}{' '}
+                <span className="muted">
+                  · {it.custom ? it.customDimensions : it.format}
+                  {it.material ? ` · ${materialLabel(it.material)}` : ''} × {it.qty}
+                </span>
+              </span>
+              <span>{it.custom ? 'Sur devis' : formatPrice(it.price * it.qty)}</span>
             </div>
           ))}
           <div className="line total">

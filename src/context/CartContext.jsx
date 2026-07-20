@@ -3,8 +3,14 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 const CartContext = createContext(null)
 const STORAGE_KEY = 'ebenora_cart'
 
-// Un item = { paintingId, title, image, format, dimensions, price, qty }
-// La clé d'unicité est paintingId + format.
+// Un item = { paintingId, title, image, format, dimensions, material, price, qty,
+//             custom, customDimensions }
+// La clé d'unicité (lineKey) combine paintingId + format + matière + dimensions
+// sur-mesure : deux variantes d'un même tableau restent des lignes distinctes.
+
+export function lineKey(item) {
+  return [item.paintingId, item.format, item.material || '', item.customDimensions || ''].join('|')
+}
 
 export function CartProvider({ children }) {
   const [items, setItems] = useState(() => {
@@ -17,8 +23,9 @@ export function CartProvider({ children }) {
   }, [items])
 
   function add(item) {
+    const key = lineKey(item)
     setItems((prev) => {
-      const i = prev.findIndex((x) => x.paintingId === item.paintingId && x.format === item.format)
+      const i = prev.findIndex((x) => lineKey(x) === key)
       if (i >= 0) {
         const next = [...prev]
         next[i] = { ...next[i], qty: next[i].qty + item.qty }
@@ -28,16 +35,16 @@ export function CartProvider({ children }) {
     })
   }
 
-  function setQty(paintingId, format, qty) {
+  function setQty(key, qty) {
     setItems((prev) =>
       prev
-        .map((x) => (x.paintingId === paintingId && x.format === format ? { ...x, qty } : x))
+        .map((x) => (lineKey(x) === key ? { ...x, qty } : x))
         .filter((x) => x.qty > 0)
     )
   }
 
-  function remove(paintingId, format) {
-    setItems((prev) => prev.filter((x) => !(x.paintingId === paintingId && x.format === format)))
+  function remove(key) {
+    setItems((prev) => prev.filter((x) => lineKey(x) !== key))
   }
 
   function clear() { setItems([]) }

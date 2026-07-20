@@ -7,7 +7,7 @@ import {
   adminListOrders, updateOrderStatus, getSettings, setSetting,
 } from '../lib/api'
 import { formatPrice, formatDate } from '../lib/format'
-import { SIZES } from '../lib/sizes'
+import { SIZES, MATERIALS, materialLabel } from '../lib/sizes'
 import { SITE_IMAGES, IMG_PLACEHOLDER } from '../lib/settings'
 import Modal from '../components/Modal'
 
@@ -257,6 +257,8 @@ function PaintingEditor({ painting, onClose, onSaved }) {
     category: painting.category || '',
     images: painting.images || [],
     formats: painting.formats?.length ? painting.formats : [{ label: '', dimensions: '', price: '', stock: '' }],
+    materials: painting.materials || [],
+    custom_allowed: painting.custom_allowed || false,
     featured: painting.featured || false,
     active: painting.active ?? true,
   })
@@ -264,6 +266,12 @@ function PaintingEditor({ painting, onClose, onSaved }) {
   const [uploading, setUploading] = useState(false)
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }))
+  const toggleMaterial = (value) => setForm((f) => ({
+    ...f,
+    materials: f.materials.includes(value)
+      ? f.materials.filter((m) => m !== value)
+      : [...f.materials, value],
+  }))
   const setFormat = (i, k, v) => setForm((f) => {
     const formats = [...f.formats]; formats[i] = { ...formats[i], [k]: v }
     // Choisir une taille remplit automatiquement les dimensions.
@@ -353,6 +361,24 @@ function PaintingEditor({ painting, onClose, onSaved }) {
         <button className="btn btn-ghost btn-sm" onClick={() => set('formats', [...form.formats, { label: '', dimensions: '', price: '', stock: '' }])}>+ Ajouter un format</button>
       </div>
 
+      <div className="field">
+        <label>Matières proposées</label>
+        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+          {MATERIALS.map((m) => (
+            <label key={m.value} style={{ display: 'flex', gap: 8, alignItems: 'center', textTransform: 'none', letterSpacing: 0 }}>
+              <input type="checkbox" checked={form.materials.includes(m.value)} onChange={() => toggleMaterial(m.value)} /> {m.label}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="field">
+        <label style={{ display: 'flex', gap: 8, alignItems: 'center', textTransform: 'none', letterSpacing: 0 }}>
+          <input type="checkbox" checked={form.custom_allowed} onChange={(e) => set('custom_allowed', e.target.checked)} />
+          Autoriser les demandes de dimensions sur-mesure (sur devis)
+        </label>
+      </div>
+
       <div style={{ display: 'flex', gap: 24, margin: '10px 0 20px' }}>
         <label style={{ display: 'flex', gap: 8, alignItems: 'center', textTransform: 'none', letterSpacing: 0 }}>
           <input type="checkbox" checked={form.featured} onChange={(e) => set('featured', e.target.checked)} /> Mise en avant
@@ -412,7 +438,11 @@ function OrdersAdmin() {
               </td>
               <td style={{ fontSize: '0.82rem' }}>
                 {(o.order_items || []).map((it) => (
-                  <div key={it.id}>{it.title} · {it.format} × {it.qty}</div>
+                  <div key={it.id}>
+                    {it.title} · {it.custom_dimensions || it.format}
+                    {it.material ? ` · ${materialLabel(it.material)}` : ''} × {it.qty}
+                    {it.custom_dimensions ? ' (sur devis)' : ''}
+                  </div>
                 ))}
               </td>
               <td>{formatPrice(o.total)}</td>

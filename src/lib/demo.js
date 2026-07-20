@@ -10,6 +10,7 @@ export const DEMO_PAINTINGS = [
     description: "Une composition abstraite aux tons chauds, où le cuivre rencontre l'ocre dans un mouvement lent et enveloppant.",
     images: [],
     formats: [F('Petit', '40 × 50 cm', 25000, 8), F('Moyen', '50 × 70 cm', 40000, 5), F('Grand', '80 × 120 cm', 65000, 3)],
+    materials: ['toile', 'verre'], custom_allowed: true,
     created_at: '2026-07-01',
   },
   {
@@ -17,6 +18,7 @@ export const DEMO_PAINTINGS = [
     description: 'Un aplat méditatif, pensé pour apaiser l’espace et capter la lumière du jour.',
     images: [],
     formats: [F('Petit', '40 × 50 cm', 25000, 10), F('Moyen', '50 × 70 cm', 40000, 6)],
+    materials: ['toile'], custom_allowed: false,
     created_at: '2026-07-02',
   },
   {
@@ -24,6 +26,7 @@ export const DEMO_PAINTINGS = [
     description: 'Un paysage stylisé aux horizons terreux, hommage à la chaleur des terres du Sahel.',
     images: [],
     formats: [F('Petit', '40 × 50 cm', 28000, 7), F('Moyen', '50 × 70 cm', 45000, 4)],
+    materials: ['toile', 'verre'], custom_allowed: true,
     created_at: '2026-07-03',
   },
   {

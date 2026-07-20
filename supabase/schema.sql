@@ -18,10 +18,18 @@ create table if not exists public.paintings (
   images      text[] not null default '{}',
   -- formats: [{ "label": "A3", "dimensions": "30x40cm", "price": 25000, "stock": 5 }]
   formats     jsonb not null default '[]',
+  -- matières proposées (cadre) : sous-ensemble de {'toile','verre'}
+  materials   text[] not null default '{}',
+  -- autorise les demandes de dimensions sur-mesure (sur devis)
+  custom_allowed boolean not null default false,
   featured    boolean not null default false,
   active      boolean not null default true,
   created_at  timestamptz not null default now()
 );
+
+-- Colonnes ajoutées après coup (idempotent si la table existait déjà).
+alter table public.paintings add column if not exists materials text[] not null default '{}';
+alter table public.paintings add column if not exists custom_allowed boolean not null default false;
 
 create table if not exists public.orders (
   id               uuid primary key default gen_random_uuid(),
@@ -41,9 +49,16 @@ create table if not exists public.order_items (
   painting_id uuid references public.paintings(id) on delete set null,
   title       text not null,
   format      text not null,
+  material    text,
+  -- dimensions demandées pour une commande sur-mesure (sinon null)
+  custom_dimensions text,
   qty         integer not null check (qty > 0),
   price       numeric(12,2) not null
 );
+
+-- Colonnes ajoutées après coup (idempotent si la table existait déjà).
+alter table public.order_items add column if not exists material text;
+alter table public.order_items add column if not exists custom_dimensions text;
 
 -- Réglages de contenu du site (images éditoriales : hero, à propos…)
 create table if not exists public.settings (
@@ -103,7 +118,10 @@ create policy order_items_select_admin on public.order_items
 -- Fonction de commande (transaction : crée la commande, ses lignes,
 -- décrémente le stock du format concerné). Exécutée en SECURITY DEFINER
 -- pour permettre au public de commander sans exposer les tables en écriture.
--- items = [{ "painting_id": "...", "format": "A3", "qty": 2 }]
+-- items = [{ "painting_id": "...", "format": "A3", "material": "toile", "qty": 2 }]
+-- Une ligne sur-mesure : { "painting_id": "...", "custom": true,
+--   "custom_dimensions": "90 x 60 cm", "material": "verre", "qty": 1 }
+-- (sur devis : prix 0, aucun décrément de stock)
 -- ------------------------------------------------------------
 
 create or replace function public.place_order(
@@ -158,6 +176,19 @@ begin
       raise exception 'Tableau introuvable';
     end if;
 
+    -- Ligne sur-mesure : sur devis, sans stock ni prix. On l'enregistre telle quelle.
+    if coalesce((v_item->>'custom')::boolean, false) then
+      if not v_painting.custom_allowed then
+        raise exception 'Le sur-mesure n''est pas proposé pour %', v_painting.title;
+      end if;
+      insert into public.order_items
+        (order_id, painting_id, title, format, material, custom_dimensions, qty, price)
+      values
+        (v_order_id, v_painting.id, v_painting.title, 'Sur-mesure',
+         v_item->>'material', v_item->>'custom_dimensions', v_qty, 0);
+      continue;
+    end if;
+
     -- retrouver le format demandé dans le jsonb formats
     v_format := null;
     v_idx := 0;
@@ -185,8 +216,8 @@ begin
     );
     update public.paintings set formats = v_new_formats where id = v_painting.id;
 
-    insert into public.order_items (order_id, painting_id, title, format, qty, price)
-    values (v_order_id, v_painting.id, v_painting.title, v_format->>'label', v_qty, v_price);
+    insert into public.order_items (order_id, painting_id, title, format, material, qty, price)
+    values (v_order_id, v_painting.id, v_painting.title, v_format->>'label', v_item->>'material', v_qty, v_price);
 
     v_total := v_total + v_price * v_qty;
   end loop;

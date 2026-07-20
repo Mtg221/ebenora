@@ -42,7 +42,14 @@ export async function placeOrder({ name, email, phone, address, note, items }) {
     p_phone: phone || null,
     p_address: address || null,
     p_note: note || null,
-    p_items: items.map((i) => ({ painting_id: i.paintingId, format: i.format, qty: i.qty })),
+    p_items: items.map((i) => ({
+      painting_id: i.paintingId,
+      format: i.format,
+      material: i.material || null,
+      custom: !!i.custom,
+      custom_dimensions: i.customDimensions || null,
+      qty: i.qty,
+    })),
   })
   if (error) throw error
   return data // uuid de la commande
@@ -75,8 +82,8 @@ export async function deletePainting(id) {
 
 // whitelist des champs modifiables (évite le mass-assignment)
 function clean(p) {
-  const { title, description, category, images, formats, featured, active } = p
-  return { title, description, category, images, formats, featured, active }
+  const { title, description, category, images, formats, materials, custom_allowed, featured, active } = p
+  return { title, description, category, images, formats, materials, custom_allowed, featured, active }
 }
 
 // ─── Admin : upload d'image dans le bucket `paintings` ──────

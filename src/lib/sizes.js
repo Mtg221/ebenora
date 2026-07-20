@@ -13,3 +13,14 @@ export const SIZES = [
 export function hasSize(painting, sizeLabel) {
   return (painting.formats || []).some((f) => f.label === sizeLabel)
 }
+
+// Matières de cadre proposées. `value` est stocké en base, `label` affiché.
+export const MATERIALS = [
+  { value: 'toile', label: 'Cadre sur toile' },
+  { value: 'verre', label: 'Cadre sur verre' },
+]
+
+// Libellé lisible d'une matière à partir de sa valeur stockée.
+export function materialLabel(value) {
+  return MATERIALS.find((m) => m.value === value)?.label || value
+}
