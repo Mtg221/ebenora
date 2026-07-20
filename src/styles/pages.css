@@ -169,6 +169,10 @@
 .status-pill { font-size: 0.72rem; padding: 4px 12px; border-radius: var(--radius-pill); background: var(--beige-naturel); color: var(--brun-profond); font-weight: 500; }
 .fmt-editor { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 8px; align-items: center; margin-bottom: 8px; }
 .fmt-editor .input { padding: 9px 10px; font-size: 0.85rem; }
+@media (max-width: 620px) {
+  .fmt-editor { grid-template-columns: 1fr 1fr; }
+  .fmt-editor .link-btn { grid-column: 1 / -1; justify-self: end; }
+}
 
 /* Contenu du site — cartes d'images éditoriales */
 .site-img-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; }
