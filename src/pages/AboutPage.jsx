@@ -8,21 +8,26 @@ export default function AboutPage() {
       <div className="split">
         <img src={siteImages.about_image || IMG_PLACEHOLDER} alt="L'artiste EBENORA" />
         <div>
-          <span className="eyebrow">L'artiste</span>
+          <span className="eyebrow">La Maison</span>
           <h2>EBENORA</h2>
           <hr className="gold-rule" />
           <p className="muted">
-            EBENORA est une démarche artistique inspirée des terres, de la lumière et de la mémoire.
-            À travers des compositions chaleureuses, où le brun profond dialogue avec l'or et l'ocre,
-            chaque œuvre cherche à créer une présence calme et enveloppante.
+            L'art ne se contente pas d'habiller un espace. Il lui donne une âme.
           </p>
           <p className="muted">
-            Les tableaux sont proposés en reproductions soignées, imprimées sur des supports de qualité,
-            afin que l'émotion de l'original puisse habiter votre intérieur.
+            Chez EBENORA, nous imaginons une collection d'œuvres contemporaines où les matières,
+            les couleurs et les émotions dialoguent avec l'architecture intérieure.
           </p>
           <p className="muted">
-            Une question, une œuvre sur mesure, une collaboration ? Écrivez-nous — c'est toujours un plaisir
-            d'échanger autour de l'art.
+            Chaque tableau est sélectionné pour sa capacité à créer une présence, à susciter une
+            émotion et à traverser le temps sans perdre de sa force.
+          </p>
+          <p className="muted">
+            Imprimées avec le plus grand soin sur des supports de qualité, nos œuvres sont pensées
+            pour s'intégrer naturellement dans des espaces élégants, chaleureux et intemporels.
+          </p>
+          <p className="muted">
+            Plus qu'un tableau, une signature pour votre intérieur.
           </p>
           <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
             <a href="mailto:ebenorart.221@gmail.com" className="btn">Nous écrire</a>
