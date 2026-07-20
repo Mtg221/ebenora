@@ -28,6 +28,7 @@ export default function Footer() {
               <li><a href="mailto:ebenorart.221@gmail.com">ebenorart.221@gmail.com</a></li>
               <li><a href="https://www.instagram.com/ebenora_art" target="_blank" rel="noreferrer">Instagram</a></li>
               <li><a href="https://www.tiktok.com/@ebenora_art" target="_blank" rel="noreferrer">TikTok</a></li>
+              <li><a href="https://www.facebook.com/share/1bfiLUJkwi/" target="_blank" rel="noreferrer">Facebook</a></li>
               <li><Link to="/admin">Administration</Link></li>
             </ul>
           </div>
