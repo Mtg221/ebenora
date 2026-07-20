@@ -8,8 +8,9 @@ export default function Footer() {
         <div>
           <img src={logo} alt="EBENORA" className="brand-logo footer-logo" />
           <p style={{ maxWidth: 320, color: 'var(--beige-naturel)', marginTop: 16, fontSize: '0.92rem' }}>
-            Reproductions d'art originales. Chaque œuvre est imprimée avec soin pour habiller vos espaces
-            d'une présence chaleureuse et intemporelle.
+            Chaque œuvre trouve l'écrin qui lui était destiné. Imprimées avec exigence sur des supports
+            de qualité, nos reproductions sont pensées pour révéler le caractère, l'émotion et l'élégance
+            de chaque intérieur.
           </p>
         </div>
         <div className="cols">
