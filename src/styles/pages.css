@@ -184,8 +184,8 @@
 .stat-kpi-value { font-family: var(--serif); font-size: 2.1rem; color: var(--brun-profond); line-height: 1; }
 .stat-block { margin-bottom: 32px; }
 .stat-block h4 { font-family: var(--serif); font-size: 1.1rem; margin: 0 0 14px; }
-.stat-chart { display: flex; align-items: flex-end; gap: 6px; height: 180px; padding-top: 8px; }
-.stat-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+.stat-chart { display: flex; align-items: flex-end; gap: 6px; height: 180px; padding-top: 8px; overflow-x: auto; overflow-y: hidden; }
+.stat-bar-col { flex: 1 0 auto; min-width: 28px; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
 .stat-bar { width: 70%; max-width: 34px; min-height: 2px; background: var(--brun-chaleureux); border-radius: 4px 4px 0 0; transition: opacity 0.2s var(--ease); }
 .stat-bar-col:hover .stat-bar { opacity: 0.75; }
 .stat-bar-x { font-size: 0.62rem; color: var(--gris-taupe); margin-top: 6px; white-space: nowrap; }
