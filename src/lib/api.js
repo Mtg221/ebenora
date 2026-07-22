@@ -128,3 +128,19 @@ export async function updateOrderStatus(id, status) {
   const { error } = await supabase.from('orders').update({ status }).eq('id', id)
   if (error) throw error
 }
+
+// ─── Admin : statistiques de trafic (proxy /api/analytics) ──
+
+export async function getSiteAnalytics(days = 7) {
+  const { data } = await supabase.auth.getSession()
+  const token = data.session?.access_token
+  if (!token) throw new Error('Session expirée, reconnectez-vous.')
+  const res = await fetch(`/api/analytics?days=${days}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    throw new Error(body.error || 'Statistiques indisponibles')
+  }
+  return res.json()
+}

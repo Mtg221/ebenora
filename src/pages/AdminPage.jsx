@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import {
   adminListPaintings, createPainting, updatePainting, deletePainting, uploadImage,
-  adminListOrders, updateOrderStatus, getSettings, setSetting,
+  adminListOrders, updateOrderStatus, getSettings, setSetting, getSiteAnalytics,
 } from '../lib/api'
 import { formatPrice, formatDate } from '../lib/format'
 import { SIZES, MATERIALS, materialLabel } from '../lib/sizes'
@@ -93,12 +93,116 @@ function AdminDashboard({ user, logout }) {
         <button className={`admin-tab ${tab === 'paintings' ? 'active' : ''}`} onClick={() => setTab('paintings')}>Tableaux</button>
         <button className={`admin-tab ${tab === 'orders' ? 'active' : ''}`} onClick={() => setTab('orders')}>Commandes</button>
         <button className={`admin-tab ${tab === 'site' ? 'active' : ''}`} onClick={() => setTab('site')}>Site</button>
+        <button className={`admin-tab ${tab === 'stats' ? 'active' : ''}`} onClick={() => setTab('stats')}>Statistiques</button>
       </div>
 
       {tab === 'paintings' && <PaintingsAdmin />}
       {tab === 'orders' && <OrdersAdmin />}
       {tab === 'site' && <SiteAdmin />}
+      {tab === 'stats' && <StatsAdmin />}
     </section>
+  )
+}
+
+// ─── Statistiques de trafic (Vercel Web Analytics) ──────
+
+function StatsAdmin() {
+  const { notify } = useToast()
+  const [days, setDays] = useState(7)
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    let alive = true
+    setLoading(true)
+    setError(null)
+    getSiteAnalytics(days)
+      .then((d) => { if (alive) setData(d) })
+      .catch((err) => { if (alive) { setError(err.message); notify(err.message, 'error') } })
+      .finally(() => { if (alive) setLoading(false) })
+    return () => { alive = false }
+  }, [days])
+
+  if (loading) return <div className="spinner" />
+  if (error) {
+    return (
+      <div className="empty">
+        <p className="muted">Impossible de charger les statistiques&nbsp;: {error}</p>
+        <p className="muted" style={{ fontSize: '0.82rem' }}>
+          Vérifiez que Web Analytics est activé sur Vercel et que les variables
+          <code> VERCEL_TOKEN</code>, <code>VERCEL_PROJECT_ID</code> sont renseignées.
+        </p>
+      </div>
+    )
+  }
+  if (!data) return null
+
+  const maxDaily = Math.max(1, ...data.daily.map((d) => d.pageviews || 0))
+
+  return (
+    <>
+      <div className="stats-head">
+        <p className="muted" style={{ margin: 0, maxWidth: 520 }}>
+          Trafic du site sur les {days} derniers jours (source&nbsp;: Vercel Web Analytics).
+        </p>
+        <div className="stats-range">
+          <button className={`admin-tab ${days === 7 ? 'active' : ''}`} onClick={() => setDays(7)}>7 jours</button>
+          <button className={`admin-tab ${days === 30 ? 'active' : ''}`} onClick={() => setDays(30)}>30 jours</button>
+        </div>
+      </div>
+
+      <div className="stat-kpis">
+        <div className="stat-kpi">
+          <span className="stat-kpi-label">Visiteurs</span>
+          <span className="stat-kpi-value">{(data.totals.visitors || 0).toLocaleString('fr-FR')}</span>
+        </div>
+        <div className="stat-kpi">
+          <span className="stat-kpi-label">Pages vues</span>
+          <span className="stat-kpi-value">{(data.totals.pageviews || 0).toLocaleString('fr-FR')}</span>
+        </div>
+      </div>
+
+      {data.daily.length > 0 && (
+        <div className="stat-block">
+          <h4>Pages vues par jour</h4>
+          <div className="stat-chart">
+            {data.daily.map((d) => (
+              <div className="stat-bar-col" key={d.timestamp} title={`${new Date(d.timestamp).toLocaleDateString('fr-FR')} — ${d.pageviews} vues`}>
+                <div className="stat-bar" style={{ height: `${((d.pageviews || 0) / maxDaily) * 100}%` }} />
+                <span className="stat-bar-x">{new Date(d.timestamp).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="stat-lists">
+        <StatList title="Pages les plus vues" rows={data.routes} label={(r) => r.route || '—'} />
+        <StatList title="Sources de trafic" rows={data.referrers} label={(r) => r.referrerHostname || 'Direct'} />
+        <StatList title="Pays" rows={data.countries} label={(r) => r.country || '—'} />
+        <StatList title="Appareils" rows={data.devices} label={(r) => r.deviceType || '—'} />
+      </div>
+    </>
+  )
+}
+
+function StatList({ title, rows, label }) {
+  if (!rows?.length) return null
+  const max = Math.max(1, ...rows.map((r) => r.pageviews || 0))
+  return (
+    <div className="stat-block">
+      <h4>{title}</h4>
+      <ul className="stat-list">
+        {rows.map((r, i) => (
+          <li key={i}>
+            <span className="stat-list-bar" style={{ width: `${((r.pageviews || 0) / max) * 100}%` }} />
+            <span className="stat-list-label">{label(r)}</span>
+            <span className="stat-list-value">{(r.pageviews || 0).toLocaleString('fr-FR')}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }
 
