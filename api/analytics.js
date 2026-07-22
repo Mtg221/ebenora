@@ -92,10 +92,10 @@ async function fetchVercel(token, path, params) {
 // Valide le JWT en interrogeant l'endpoint /auth/v1/user de Supabase.
 // Retourne { ok, status, error } pour un diagnostic précis.
 async function verifySupabaseUser(jwt) {
-  const url = process.env.SUPABASE_URL
-  const anon = process.env.SUPABASE_ANON_KEY
+  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL
+  const anon = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY
   if (!url || !anon) {
-    return { ok: false, status: 500, error: 'SUPABASE_URL / SUPABASE_ANON_KEY manquantes côté serveur' }
+    return { ok: false, status: 500, error: 'Configuration Supabase manquante côté serveur' }
   }
   try {
     const r = await fetch(`${url}/auth/v1/user`, {
