@@ -26,9 +26,9 @@ export default async function handler(req, res) {
     res.status(401).json({ error: 'Authentification requise' })
     return
   }
-  const okUser = await verifySupabaseUser(jwt)
-  if (!okUser) {
-    res.status(403).json({ error: 'Accès refusé' })
+  const check = await verifySupabaseUser(jwt)
+  if (!check.ok) {
+    res.status(check.status === 500 ? 500 : 403).json({ error: check.error })
     return
   }
 
@@ -90,19 +90,24 @@ async function fetchVercel(token, path, params) {
 }
 
 // Valide le JWT en interrogeant l'endpoint /auth/v1/user de Supabase.
-// Retourne true si le token correspond à un utilisateur valide.
+// Retourne { ok, status, error } pour un diagnostic précis.
 async function verifySupabaseUser(jwt) {
   const url = process.env.SUPABASE_URL
   const anon = process.env.SUPABASE_ANON_KEY
-  if (!url || !anon) return false
+  if (!url || !anon) {
+    return { ok: false, status: 500, error: 'SUPABASE_URL / SUPABASE_ANON_KEY manquantes côté serveur' }
+  }
   try {
     const r = await fetch(`${url}/auth/v1/user`, {
       headers: { Authorization: `Bearer ${jwt}`, apikey: anon },
     })
-    if (!r.ok) return false
+    if (!r.ok) {
+      return { ok: false, status: 403, error: `Session non validée par Supabase (${r.status})` }
+    }
     const user = await r.json()
-    return Boolean(user?.id)
-  } catch {
-    return false
+    if (!user?.id) return { ok: false, status: 403, error: 'Utilisateur introuvable' }
+    return { ok: true }
+  } catch (err) {
+    return { ok: false, status: 500, error: `Vérification Supabase impossible : ${err.message}` }
   }
 }
