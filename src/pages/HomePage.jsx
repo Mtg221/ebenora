@@ -20,9 +20,7 @@ export default function HomePage() {
     <>
       {/* Hero */}
       <section className="hero">
-        {siteImages.hero_image && (
-          <div className="hero-media"><img src={siteImages.hero_image} alt="" /></div>
-        )}
+        <div className="hero-media"><img src={siteImages.hero_image || IMG_PLACEHOLDER} alt="" /></div>
         <div className="hero-inner">
           <span className="eyebrow">Galerie d'art · Éditions limitées</span>
           <h1>L'art qui habite vos murs</h1>
