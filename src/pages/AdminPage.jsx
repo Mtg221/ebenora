@@ -139,14 +139,20 @@ function StatsAdmin() {
   if (!data) return null
 
   const maxDaily = Math.max(1, ...data.daily.map((d) => d.pageviews || 0))
+  const hourly = data.trendBy === 'hour'
+  const xLabel = (ts) => hourly
+    ? new Date(ts).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+    : new Date(ts).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })
+  const rangeText = days === 1 ? '24 dernières heures' : `${days} derniers jours`
 
   return (
     <>
       <div className="stats-head">
         <p className="muted" style={{ margin: 0, maxWidth: 520 }}>
-          Trafic du site sur les {days} derniers jours (source&nbsp;: Vercel Web Analytics).
+          Trafic du site sur les {rangeText} (source&nbsp;: Vercel Web Analytics).
         </p>
         <div className="stats-range">
+          <button className={`admin-tab ${days === 1 ? 'active' : ''}`} onClick={() => setDays(1)}>24 h</button>
           <button className={`admin-tab ${days === 7 ? 'active' : ''}`} onClick={() => setDays(7)}>7 jours</button>
           <button className={`admin-tab ${days === 30 ? 'active' : ''}`} onClick={() => setDays(30)}>30 jours</button>
         </div>
@@ -165,12 +171,12 @@ function StatsAdmin() {
 
       {data.daily.length > 0 && (
         <div className="stat-block">
-          <h4>Pages vues par jour</h4>
+          <h4>Pages vues par {hourly ? 'heure' : 'jour'}</h4>
           <div className="stat-chart">
             {data.daily.map((d) => (
-              <div className="stat-bar-col" key={d.timestamp} title={`${new Date(d.timestamp).toLocaleDateString('fr-FR')} — ${d.pageviews} vues`}>
+              <div className="stat-bar-col" key={d.timestamp} title={`${xLabel(d.timestamp)} — ${d.pageviews} vues`}>
                 <div className="stat-bar" style={{ height: `${((d.pageviews || 0) / maxDaily) * 100}%` }} />
-                <span className="stat-bar-x">{new Date(d.timestamp).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}</span>
+                <span className="stat-bar-x">{xLabel(d.timestamp)}</span>
               </div>
             ))}
           </div>

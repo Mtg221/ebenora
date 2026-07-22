@@ -40,15 +40,18 @@ export default async function handler(req, res) {
     return
   }
 
-  // ── Période demandée (7 ou 30 jours) ──
-  const days = req.query.days === '30' ? 30 : 7
+  // ── Période demandée (1 = 24 h, 7 ou 30 jours) ──
+  const days = req.query.days === '30' ? 30 : req.query.days === '1' ? 1 : 7
+  const trendBy = days === 1 ? 'hour' : 'day'
   const until = new Date()
   const since = new Date(until.getTime() - days * 24 * 60 * 60 * 1000)
+  // Granularité horaire → dates ISO complètes ; sinon dates AAAA-MM-JJ.
+  const fmt = (d) => (days === 1 ? d.toISOString() : d.toISOString().slice(0, 10))
   const base = {
     projectId,
     ...(teamId ? { teamId } : {}),
-    since: since.toISOString().slice(0, 10),
-    until: until.toISOString().slice(0, 10),
+    since: fmt(since),
+    until: fmt(until),
   }
 
   const call = (path, params) =>
@@ -57,7 +60,7 @@ export default async function handler(req, res) {
   try {
     const [total, daily, routes, referrers, countries, devices] = await Promise.all([
       call('visits/count', {}),
-      call('visits/aggregate', { by: 'day' }),
+      call('visits/aggregate', { by: trendBy }),
       call('visits/aggregate', { by: 'route', limit: '8' }),
       call('visits/aggregate', { by: 'referrerHostname', limit: '8' }),
       call('visits/aggregate', { by: 'country', limit: '8' }),
@@ -68,6 +71,7 @@ export default async function handler(req, res) {
     res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600')
     res.status(200).json({
       days,
+      trendBy,
       totals: total?.data || { pageviews: 0, visitors: 0 },
       daily: daily?.data || [],
       routes: routes?.data || [],
