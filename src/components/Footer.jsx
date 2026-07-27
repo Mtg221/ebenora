@@ -35,7 +35,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="footer-bottom">
-        © {new Date().getFullYear()} EBENORA — Tous droits réservés.
+        © {new Date().getFullYear()} EBENORA — Ebenora — Tous droits réservés. <a href="mailto:contact@jeftech.dev" style={{ color: 'var(--beige-naturel)', marginLeft: 16 }}>contact@jeftech.dev</a>
       </div>
     </footer>
   )
